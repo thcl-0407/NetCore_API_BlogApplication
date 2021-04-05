@@ -36,6 +36,11 @@ namespace Utilities.JWT
             }
         }
 
+        public static TokenResponse GenerateTokens(object userReadDTO, object userTokenOption)
+        {
+            throw new NotImplementedException();
+        }
+
         public static DateTime GetExpiredTime(string token)
         {
             return new JwtSecurityToken(token).ValidTo;

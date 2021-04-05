@@ -7,7 +7,7 @@ using DTO.WriteDTO;
 using Utilities;
 using UnitTest_Services_BlogApplication.Profiles;
 
-namespace UnitTest_Services_BlogApplication
+namespace UnitTest_Services_BlogApplication.UnitTest_UserService
 {
     [TestClass]
     public class UnitTest_Registry_UserService

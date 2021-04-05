@@ -124,6 +124,16 @@ namespace Services
         /*Get Token's Access User*/
         public Token GetToken(string UserID)
         {
+            if (UserID == null)
+            {
+                throw new NullReferenceException();
+            }
+
+            if(UserID.Trim().Length == 0)
+            {
+                throw new ArgumentException();
+            }
+
             return db.Tokens.Where(t => t.UserID.Equals(new Guid(UserID))).FirstOrDefault();
         }
 
@@ -155,13 +165,27 @@ namespace Services
 
                 if (token != null)
                 {
+                    if(tokenReadDTO == null)
+                    {
+                        return new CustomResponse(false, "TokenReadDTO is Null");
+                    }
+
+                    if (tokenReadDTO.isNullValue())
+                    {
+                        return new CustomResponse(false, "TokenReadDTO Value is Null");
+                    }
+
                     token.AccessToken = tokenReadDTO.AccessToken;
                     token.AccessTokenExpriesIn = tokenReadDTO.AccessTokenExpriesIn;
                     token.RefreshToken = tokenReadDTO.RefreshToken;
                     token.RefreshTokenExpriesIn = tokenReadDTO.RefreshTokenExpriesIn;
-                }
 
-                await db.SaveChangesAsync();
+                    await db.SaveChangesAsync();
+                }
+                else
+                {
+                    return new CustomResponse(false, "User ID Not Exist");
+                }
             }
             catch (Exception e)
             {
@@ -174,6 +198,11 @@ namespace Services
         /*Update User Infor*/
         public async Task<CustomResponse> UpdateUserInfor(UserReadDTO userReadDTO)
         {
+            if(userReadDTO == null)
+            {
+                return new CustomResponse(false, "User Read DTO is null");
+            }
+
             try
             {
                 User userWillUpdate = db.Users.Where(u => u.UserID.Equals(new Guid(userReadDTO.UserID))).FirstOrDefault();
