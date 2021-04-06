@@ -13,7 +13,7 @@ using System.Linq;
 namespace UnitTest_Services_BlogApplication.UnitTest_PostService
 {
     [TestClass]
-    public class UnitTest_GetPostsByUserID_PostService
+    public class UnitTest_CreatePost_PostService
     {
         private BlogApplicationDbContext db;
         private PostService postService;
@@ -21,7 +21,7 @@ namespace UnitTest_Services_BlogApplication.UnitTest_PostService
         private User UserTest;
         private ImageGallery ImageGalleryTest;
 
-        public UnitTest_GetPostsByUserID_PostService()
+        public UnitTest_CreatePost_PostService()
         {
             db = new BlogApplicationDbContext();
             postService = new PostService(db);
@@ -49,93 +49,279 @@ namespace UnitTest_Services_BlogApplication.UnitTest_PostService
 
         #region Test Null Parameter
         [TestMethod]
-        [ExpectedException(typeof(NullReferenceException))]
-        public void GetPostByUserID_NullParameter_ThrowNullReference()
+        public void CreatPost_NullParameter_ActualFalse()
         {
             //Arrange
-            string UserID = null;
+            PostWriteDTO postWriteDTO = null;
 
             //Act
-            var result = postService.GetPosts(UserID);
+            var result = postService.Create(postWriteDTO).Result;
 
             //Assert
-            Assert.ThrowsExceptionAsync<NullReferenceException>(() => result);
+            Assert.AreEqual(false, result.status);
         }
         #endregion
 
-        #region Test User ID Value Length = 0
+        #region Test Title Null
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
-        public void GetPostByUserID_UserIDValueLengthEqual0_ThrowArgumentException()
+        public void CreatPost_TitleNull_ActualFalse()
         {
             //Arrange
-            string UserID = " ";
-
-            //Act
-            var result = postService.GetPosts(UserID);
-
-            //Assert
-            Assert.ThrowsExceptionAsync<ArgumentException>(() => result);
-        }
-        #endregion
-
-        #region Test User ID Has Nos Post
-        [TestMethod]
-        public void GetPostByUserID_UserIDHasNoPost_ListCountEqual0()
-        {
-            //Arrange
-            db.Posts.RemoveRange(db.Posts);
-            db.SaveChanges();
-
-            Post post = new Post
-            {
-                TitlePost = "Title",
-                SummaryPost = "Summary",
-                ContentPost = "Content",
-                DateCreate = DateTime.Now,
-                DateUpdate = DateTime.Now,
-                UserID = UserTest.UserID,
-                ImageID = ImageGalleryTest.ImageID
+            PostWriteDTO postWriteDTO = new PostWriteDTO { 
+               TitlePost = null,
+               SummaryPost = "Summary",
+               ContentPost = "Content",
+               DateCreated = DateTime.Now,
+               EncodeImage = ImageGalleryTest.Base64Code,
+               UserID = UserTest.UserID.ToString(),
+               ImageID = ImageGalleryTest.ImageID.ToString(),
             };
 
-            db.Posts.Add(post);
-            db.SaveChanges();
-
             //Act
-            var result = postService.GetPosts(Guid.NewGuid().ToString()).Result;
+            var result = postService.Create(postWriteDTO).Result;
 
             //Assert
-            Assert.AreEqual(0, result.Count);
+            Assert.AreEqual(false, result.status);
         }
         #endregion
 
-        #region Test User ID Has Post
+        #region Test Summary Null
         [TestMethod]
-        public void GetPostByUserID_UserIDHasPost_ListCountEqual0()
+        public void CreatPost_SummaryNull_ActualFalse()
         {
             //Arrange
-            db.Posts.RemoveRange(db.Posts);
-            db.SaveChanges();
-
-            Post post = new Post
+            PostWriteDTO postWriteDTO = new PostWriteDTO
             {
-                TitlePost = "Title",
-                SummaryPost = "Summary",
+                TitlePost = "Tiltle",
+                SummaryPost = null,
                 ContentPost = "Content",
-                DateCreate = DateTime.Now,
-                DateUpdate = DateTime.Now,
-                UserID = UserTest.UserID,
-                ImageID = ImageGalleryTest.ImageID
+                DateCreated = DateTime.Now,
+                EncodeImage = ImageGalleryTest.Base64Code,
+                UserID = UserTest.UserID.ToString(),
+                ImageID = ImageGalleryTest.ImageID.ToString(),
             };
 
-            db.Posts.Add(post);
-            db.SaveChanges();
-
             //Act
-            var result = postService.GetPosts(post.UserID.ToString()).Result;
+            var result = postService.Create(postWriteDTO).Result;
 
             //Assert
-            Assert.AreNotEqual(0, result.Count);
+            Assert.AreEqual(false, result.status);
+        }
+        #endregion
+
+        #region Test Content Null
+        [TestMethod]
+        public void CreatPost_ContentNull_ActualFalse()
+        {
+            //Arrange
+            PostWriteDTO postWriteDTO = new PostWriteDTO
+            {
+                TitlePost = "Tiltle",
+                SummaryPost = "Summary",
+                ContentPost = null,
+                DateCreated = DateTime.Now,
+                EncodeImage = ImageGalleryTest.Base64Code,
+                UserID = UserTest.UserID.ToString(),
+                ImageID = ImageGalleryTest.ImageID.ToString(),
+            };
+
+            //Act
+            var result = postService.Create(postWriteDTO).Result;
+
+            //Assert
+            Assert.AreEqual(false, result.status);
+        }
+        #endregion
+
+        #region Test Encode Image Null
+        [TestMethod]
+        public void CreatPost_EncodeImageNull_ActualFalse()
+        {
+            //Arrange
+            PostWriteDTO postWriteDTO = new PostWriteDTO
+            {
+                TitlePost = "Tiltle",
+                SummaryPost = "Summary",
+                ContentPost = "Content",
+                DateCreated = DateTime.Now,
+                EncodeImage = null,
+                UserID = UserTest.UserID.ToString(),
+                ImageID = ImageGalleryTest.ImageID.ToString(),
+            };
+
+            //Act
+            var result = postService.Create(postWriteDTO).Result;
+
+            //Assert
+            Assert.AreEqual(false, result.status);
+        }
+        #endregion
+
+        #region Test User ID Null
+        [TestMethod]
+        public void CreatPost_UserIDNull_ActualFalse()
+        {
+            //Arrange
+            PostWriteDTO postWriteDTO = new PostWriteDTO
+            {
+                TitlePost = "Tiltle",
+                SummaryPost = "Summary",
+                ContentPost = "Content",
+                DateCreated = DateTime.Now,
+                EncodeImage = ImageGalleryTest.Base64Code,
+                UserID = null,
+                ImageID = ImageGalleryTest.ImageID.ToString(),
+            };
+
+            //Act
+            var result = postService.Create(postWriteDTO).Result;
+
+            //Assert
+            Assert.AreEqual(false, result.status);
+        }
+        #endregion
+
+        #region Test Title Empty
+        [TestMethod]
+        public void CreatPost_TitleEmpty_ActualFalse()
+        {
+            //Arrange
+            PostWriteDTO postWriteDTO = new PostWriteDTO
+            {
+                TitlePost = String.Empty,
+                SummaryPost = "Summary",
+                ContentPost = "Content",
+                DateCreated = DateTime.Now,
+                EncodeImage = ImageGalleryTest.Base64Code,
+                UserID = UserTest.UserID.ToString(),
+                ImageID = ImageGalleryTest.ImageID.ToString(),
+            };
+
+            //Act
+            var result = postService.Create(postWriteDTO).Result;
+
+            //Assert
+            Assert.AreEqual(false, result.status);
+        }
+        #endregion
+
+        #region Test Summary Empty
+        [TestMethod]
+        public void CreatPost_SummaryEmpty_ActualFalse()
+        {
+            //Arrange
+            PostWriteDTO postWriteDTO = new PostWriteDTO
+            {
+                TitlePost = "Tiltle",
+                SummaryPost = String.Empty,
+                ContentPost = "Content",
+                DateCreated = DateTime.Now,
+                EncodeImage = ImageGalleryTest.Base64Code,
+                UserID = UserTest.UserID.ToString(),
+                ImageID = ImageGalleryTest.ImageID.ToString(),
+            };
+
+            //Act
+            var result = postService.Create(postWriteDTO).Result;
+
+            //Assert
+            Assert.AreEqual(false, result.status);
+        }
+        #endregion
+
+        #region Test Content Empty
+        [TestMethod]
+        public void CreatPost_ContentEmpty_ActualFalse()
+        {
+            //Arrange
+            PostWriteDTO postWriteDTO = new PostWriteDTO
+            {
+                TitlePost = "Tiltle",
+                SummaryPost = "Summary",
+                ContentPost = String.Empty,
+                DateCreated = DateTime.Now,
+                EncodeImage = ImageGalleryTest.Base64Code,
+                UserID = UserTest.UserID.ToString(),
+                ImageID = ImageGalleryTest.ImageID.ToString(),
+            };
+
+            //Act
+            var result = postService.Create(postWriteDTO).Result;
+
+            //Assert
+            Assert.AreEqual(false, result.status);
+        }
+        #endregion
+
+        #region Test Encode Image Empty
+        [TestMethod]
+        public void CreatPost_EncodeImageEmpty_ActualFalse()
+        {
+            //Arrange
+            PostWriteDTO postWriteDTO = new PostWriteDTO
+            {
+                TitlePost = "Tiltle",
+                SummaryPost = "Summary",
+                ContentPost = "Content",
+                DateCreated = DateTime.Now,
+                EncodeImage = String.Empty,
+                UserID = UserTest.UserID.ToString(),
+                ImageID = ImageGalleryTest.ImageID.ToString(),
+            };
+
+            //Act
+            var result = postService.Create(postWriteDTO).Result;
+
+            //Assert
+            Assert.AreEqual(false, result.status);
+        }
+        #endregion
+
+        #region Test User ID Empty
+        [TestMethod]
+        public void CreatPost_UserIDEmpty_ActualFalse()
+        {
+            //Arrange
+            PostWriteDTO postWriteDTO = new PostWriteDTO
+            {
+                TitlePost = "Tiltle",
+                SummaryPost = "Summary",
+                ContentPost = "Content",
+                DateCreated = DateTime.Now,
+                EncodeImage = ImageGalleryTest.Base64Code,
+                UserID = String.Empty,
+                ImageID = ImageGalleryTest.ImageID.ToString(),
+            };
+
+            //Act
+            var result = postService.Create(postWriteDTO).Result;
+
+            //Assert
+            Assert.AreEqual(false, result.status);
+        }
+        #endregion
+
+        #region Test Success
+        [TestMethod]
+        public void CreatePost_Success_ActualTrue()
+        {
+            //Arrange
+            PostWriteDTO postWriteDTO = new PostWriteDTO
+            {
+                TitlePost = "Tiltle",
+                SummaryPost = "Summary",
+                ContentPost = "Content",
+                DateCreated = DateTime.Now,
+                EncodeImage = ImageGalleryTest.Base64Code,
+                UserID = UserTest.UserID.ToString(),
+                ImageID = ImageGalleryTest.ImageID.ToString(),
+            };
+
+            //Act
+            var result = postService.Create(postWriteDTO).Result;
+
+            //Asssert
+            Assert.AreEqual(true, result.status);
         }
         #endregion
     }

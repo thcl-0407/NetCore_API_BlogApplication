@@ -29,6 +29,16 @@ namespace Services
                 return new CustomResponse(false, "Post is Null");
             }
 
+            if (postWrite.isPropertiesNull())
+            {
+                return new CustomResponse(false, "Post properties is Null");
+            }
+
+            if (postWrite.isPropertiesEmpty())
+            {
+                return new CustomResponse(false, "Post properties is Empty");
+            }
+
             try
             {
                 //Init a Post
@@ -71,6 +81,18 @@ namespace Services
             if (postWrite == null)
             {
                 return new CustomResponse(false, "Post is Null");
+            }
+
+            postWrite.UserID = UserID;
+
+            if (postWrite.isPropertiesNull())
+            {
+                return new CustomResponse(false, "Post properties is Null");
+            }
+
+            if (postWrite.isPropertiesEmpty())
+            {
+                return new CustomResponse(false, "Post properties is Empty");
             }
 
             try
@@ -264,6 +286,16 @@ namespace Services
         /*Get Danh Sách Bài Viết Của Một User*/
         public Task<List<PostReadDTO>> GetPosts(string UserID)
         {
+            if (UserID == null)
+            {
+                throw new NullReferenceException();
+            }
+
+            if (UserID.Trim().Length == 0)
+            {
+                throw new ArgumentException();
+            }
+
             Task<List<PostReadDTO>> post_result = (from ImageGallery in db.ImageGalleries
                                              join Post in db.Posts on ImageGallery.ImageID equals Post.ImageID
                                              join User in db.Users on Post.UserID equals User.UserID
@@ -286,6 +318,16 @@ namespace Services
 
         public Task<List<PostReadDTO>> GetPostsByTitle(string Key_Title)
         {
+            if (Key_Title == null)
+            {
+                throw new NullReferenceException();
+            }
+
+            if (Key_Title.Trim().Length == 0)
+            {
+                throw new ArgumentException();
+            }
+
             Task<List<PostReadDTO>> post_result = (from ImageGallery in db.ImageGalleries
                                                    join Post in db.Posts on ImageGallery.ImageID equals Post.ImageID
                                                    join User in db.Users on Post.UserID equals User.UserID
