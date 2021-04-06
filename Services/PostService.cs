@@ -14,7 +14,7 @@ namespace Services
 {
     public class PostService : IPostService
     {
-        private readonly BlogApplicationDbContext db;
+        private BlogApplicationDbContext db;
 
         public PostService(BlogApplicationDbContext dbContext)
         {
@@ -185,8 +185,18 @@ namespace Services
         }
 
         /*Get A Post*/
-        public async Task<PostReadDTO> GetPost(int PostID)
+        public async Task<PostReadDTO> GetPost(int? PostID)
         {
+            if (PostID == null)
+            {
+                throw new ArgumentNullException();
+            }
+
+            if(PostID > int.MaxValue || PostID < int.MinValue)
+            {
+                throw new ArgumentOutOfRangeException();
+            }
+
             PostReadDTO post_result =  (from ImageGallery in db.ImageGalleries
                                              join Post in db.Posts on ImageGallery.ImageID equals Post.ImageID
                                              join User in db.Users on Post.UserID equals User.UserID
@@ -208,11 +218,11 @@ namespace Services
         }
 
         /*Get Base64Image A Post*/
-        public async Task<string> GetBase64ImageAsync(int PostID)
+        public async Task<string> GetBase64ImageAsync(int? PostID)
         {
             if (PostID == null)
             {
-                throw new Exception("PostID is Null");
+                throw new ArgumentNullException();
             }
 
             try
@@ -224,7 +234,7 @@ namespace Services
             }
             catch (Exception e)
             {
-                throw new Exception(e.Message);
+                return String.Empty;
             }
 
             return String.Empty;

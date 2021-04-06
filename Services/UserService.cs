@@ -203,6 +203,11 @@ namespace Services
                 return new CustomResponse(false, "User Read DTO is null");
             }
 
+            if (userReadDTO.isValueNull())
+            {
+                return new CustomResponse(false, "User Read DTO value is null");
+            }
+
             try
             {
                 User userWillUpdate = db.Users.Where(u => u.UserID.Equals(new Guid(userReadDTO.UserID))).FirstOrDefault();
@@ -210,9 +215,13 @@ namespace Services
                 if (userWillUpdate != null)
                 {
                     userWillUpdate.UserName = userReadDTO.UserName;
-                }
 
-                await db.SaveChangesAsync();
+                    await db.SaveChangesAsync();
+                }
+                else
+                {
+                    return new CustomResponse(false, "User is not exist");
+                }
             }
             catch (Exception e)
             {
@@ -225,6 +234,21 @@ namespace Services
         /*Update Password*/
         public async Task<CustomResponse> UpdatePassword(string UserID, string OldPassword, string NewPassword)
         {
+            if(UserID == null || UserID.Trim().Length == 0)
+            {
+                return new CustomResponse(false, "User ID invalid");
+            }
+
+            if (OldPassword == null || OldPassword.Trim().Length == 0)
+            {
+                return new CustomResponse(false, "Old Password invalid");
+            }
+
+            if (NewPassword == null || NewPassword.Trim().Length == 0)
+            {
+                return new CustomResponse(false, "New Password invalid");
+            }
+
             try
             {
                 User userWillUpdate = db.Users.Where(u => u.UserID.Equals(new Guid(UserID))).FirstOrDefault();
@@ -234,14 +258,18 @@ namespace Services
                     if(BCryptUtil.VerifyPassword(OldPassword, userWillUpdate.HashPassword))
                     {
                         userWillUpdate.HashPassword = BCryptUtil.HashPassword(NewPassword);
+
+                        await db.SaveChangesAsync();
                     }
                     else
                     {
                         return new CustomResponse(false, "Mật Khẩu Không Chính Xác");
                     }
                 }
-
-                await db.SaveChangesAsync();
+                else
+                {
+                    return new CustomResponse(false, "User Not Exist");
+                }
             }
             catch (Exception e)
             {

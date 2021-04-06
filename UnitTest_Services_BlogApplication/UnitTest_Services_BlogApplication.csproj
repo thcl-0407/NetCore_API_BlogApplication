@@ -21,7 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="UnitTest_PostService\" />
+    <Folder Include="UnitTest_CommentService\" />
   </ItemGroup>
 
 </Project>

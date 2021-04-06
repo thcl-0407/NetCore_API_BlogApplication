@@ -11,13 +11,28 @@ namespace DTO.ReadDTO
             Email = email;
         }
 
-        public UserReadDTO()
-        {
-          
-        }
+        public UserReadDTO(){}
 
         public string UserID { get; set; }
         public string UserName { get; set; }
         public string Email { get; set; }
+
+        public bool isValueNull()
+        {
+            if(this.UserID == null)
+            {
+                return true;
+            }
+            if (this.UserName == null)
+            {
+                return true;
+            }
+            if (this.Email == null)
+            {
+                return true;
+            }
+
+            return false;
+        }
     }
 }
