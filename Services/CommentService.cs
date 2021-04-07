@@ -21,8 +21,13 @@ namespace Services
         }
 
         /*Get Comment A Post*/
-        public async Task<List<CommentReadDTO>> GetComments(int PostID)
+        public async Task<List<CommentReadDTO>> GetComments(int PostID) 
         {
+            if(PostID >= Int32.MaxValue || PostID <= Int32.MinValue)
+            {
+                throw new ArgumentOutOfRangeException();
+            }
+
             List<CommentReadDTO> GetComment_Task = new List<CommentReadDTO>();
 
             try
@@ -53,9 +58,19 @@ namespace Services
         {
             CommentReadDTO commentReadDTO;
 
-            if (commentWrite == null)
+            if (commentWrite == null || commentWrite.isNullValue())
             {
                 return new CustomResponse(false, "Comment is Null");
+            }
+
+            if (commentWrite.UserID.ToString().Trim().Length == 0)
+            {
+                return new CustomResponse(false, "User ID is Empty");
+            }
+
+            if(commentWrite.CommentContent.Trim().Length == 0)
+            {
+                return new CustomResponse(false, "Comment Content is Empty");
             }
 
             try
@@ -109,6 +124,16 @@ namespace Services
         /*Remove Comment A Post*/
         public async Task<CustomResponse> Remove(string CommentID, string UserID)
         {
+            if(CommentID == null || UserID == null)
+            {
+                return new CustomResponse(false, "Parameter is null");
+            }
+
+            if(CommentID.Trim().Length == 0 || UserID.Trim().Length == 0)
+            {
+                return new CustomResponse(false, "Property is Empty");
+            }
+            
             try
             {
                 var PostComment = db.PostComments.FirstOrDefault(pc => pc.CommentID.Equals(new Guid(CommentID)) && pc.UserID.Equals(new Guid(UserID)));

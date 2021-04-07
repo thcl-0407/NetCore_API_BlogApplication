@@ -20,8 +20,4 @@
     <ProjectReference Include="..\Utilities\Utilities.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="UnitTest_CommentService\" />
-  </ItemGroup>
-
 </Project>

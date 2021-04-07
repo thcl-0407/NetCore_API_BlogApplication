@@ -85,12 +85,12 @@ namespace Services
 
             postWrite.UserID = UserID;
 
-            if (postWrite.isPropertiesNull())
+            if (postWrite.isPropertiesNullWithoutEndcode())
             {
                 return new CustomResponse(false, "Post properties is Null");
             }
 
-            if (postWrite.isPropertiesEmpty())
+            if (postWrite.isPropertiesEmptyWithoutEndcode())
             {
                 return new CustomResponse(false, "Post properties is Empty");
             }
@@ -164,7 +164,12 @@ namespace Services
         {
             if (postID == null)
             {
-                return new CustomResponse(false, "PostID is Null");
+                throw new ArgumentNullException();
+            }
+
+            if (postID > int.MaxValue || postID < int.MinValue)
+            {
+                throw new ArgumentOutOfRangeException();
             }
 
             try
@@ -202,8 +207,6 @@ namespace Services
             {
                 return new CustomResponse(false, e.Message);
             }
-
-           
         }
 
         /*Get A Post*/

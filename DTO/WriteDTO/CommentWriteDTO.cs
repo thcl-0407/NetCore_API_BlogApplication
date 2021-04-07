@@ -21,5 +21,20 @@ namespace DTO.WriteDTO
 
         [Required]
         public int PostID { get; set; }
+
+        public bool isNullValue()
+        {
+            if(CommentContent == null)
+            {
+                return true;
+            }
+
+            if (UserID == null)
+            {
+                return true;
+            }
+
+            return false;
+        }
     }
 }
